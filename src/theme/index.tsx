@@ -36,6 +36,22 @@ let theme = createTheme({
     MuiChip,
     MuiTextField,
     MuiListItemIcon,
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          color: "#656565",
+          "&.Mui-selected": {
+            color: "#292929",
+          },
+          "& .MuiSvgIcon-root": {
+            color: "#656565",
+          },
+          "&.Mui-selected .MuiSvgIcon-root": {
+            color: "#292929",
+          },
+        },
+      },
+    },
   },
   typography,
 });

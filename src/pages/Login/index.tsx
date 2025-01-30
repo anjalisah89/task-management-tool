@@ -61,6 +61,7 @@ const Login = () => {
             display: "flex",
             alignItems: "center",
             gap: 1,
+            textTransform: "capitalize",
           }}
         >
           <Box
