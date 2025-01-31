@@ -1,4 +1,3 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -8,16 +7,14 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAkFvFyLAPMh49x4u_kLMYmMZfyme6f8Nk",
-  authDomain: "task-management-9d076.firebaseapp.com",
-  projectId: "task-management-9d076",
-  storageBucket: "task-management-9d076.firebasestorage.app",
-  messagingSenderId: "746256339584",
-  appId: "1:746256339584:web:c786c5209720adf8fecc65",
-  measurementId: "G-CED8TK2XFY",
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
+  measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase

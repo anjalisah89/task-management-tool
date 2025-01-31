@@ -52,6 +52,16 @@ let theme = createTheme({
         },
       },
     },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          fontSize: 12,
+          borderRadius: 24,
+          alignItems: "center",
+          textTransform: "uppercase",
+        },
+      },
+    },
   },
   typography,
 });
