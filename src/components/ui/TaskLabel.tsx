@@ -5,23 +5,23 @@ const TaskLabel = () => {
     <Box
       sx={{
         display: "flex",
-        paddingX: 1,
+        paddingX: 4,
         alignItems: "center",
       }}
     >
       <Typography
         variant="caption"
         color="textSecondary"
-        sx={{ fontSize: 12, fontWeight: 800, flex: 2 }}
+        sx={{ fontSize: 12, fontWeight: 800, flex: 1.4 }}
       >
         Task Name
       </Typography>
       <Typography
         variant="caption"
         color="textSecondary"
-        sx={{ fontSize: 12, fontWeight: 800, flex: 1 }}
+        sx={{ fontSize: 12, fontWeight: 800, flex: 0.8 }}
       >
-        Date on
+        Due on
       </Typography>
       <Typography
         variant="caption"

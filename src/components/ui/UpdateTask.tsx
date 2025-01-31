@@ -18,31 +18,44 @@ import {
 } from "@mui/material";
 import { IconX } from "@tabler/icons-react";
 
-interface CreateTaskProps {
+interface UpdateTaskProps {
   open: boolean;
   handleClose: () => void;
 }
 
-const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
+const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose }) => {
   const theme = useTheme();
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("in-progress");
   const [category, setCategory] = useState("work");
+  const [title, setTitle] = useState("Morning Workout");
+  const [description, setDescription] = useState(
+    "Spend 30 minutes on cardio and strength training exercises to stay active and healthy."
+  );
+
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
       <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
-        Create Task
+        Update Task
         <IconButton onClick={handleClose}>
           <IconX />
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <TextField fullWidth label="Task Title" margin="dense" />
+        <TextField
+          fullWidth
+          label="Task Title"
+          margin="dense"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
         <TextField
           fullWidth
           label="Description"
           margin="dense"
           multiline
           rows={3}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
         <Box display="flex" gap={4} mt={2}>
           <FormControl>
@@ -102,7 +115,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
           component="label"
           variant="outlined"
           fullWidth
-          sx={{ mt: 1, borderRadius: 1, textTransform: "capitalize" }}
+          sx={{ mt: 1, borderRadius: 1 }}
         >
           Upload Attachment
           <input type="file" hidden />
@@ -113,11 +126,11 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
           Cancel
         </Button>
         <Button onClick={handleClose} variant="contained">
-          Create
+          Update
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default CreateTask;
+export default UpdateTask;
