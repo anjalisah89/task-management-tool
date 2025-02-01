@@ -20,8 +20,9 @@ const AccordionList = () => {
   useEffect(() => {
     const q = query(collection(db, "todo"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      // Security Check
       if (snapshot.empty) {
-        console.log("No data found!");
+        // console.log("No data found!");
         return;
       }
 
@@ -33,10 +34,10 @@ const AccordionList = () => {
 
       snapshot.forEach((doc) => {
         const data = doc.data();
-        console.log("Fetched data:", data);
+        // console.log("Fetched data:", data);
 
         const task: Task = {
-          id: data.id,
+          id: doc.id,
           title: data.title,
           date: new Date(data.date.seconds * 1000).toDateString(),
           type: data.type,
@@ -58,48 +59,18 @@ const AccordionList = () => {
     return () => unsubscribe();
   }, []);
 
-  // Move task between categories
-  const moveTask = (taskId: number, from: TaskCategory, to: TaskCategory) => {
-    const taskToMove = tasks[from].find((task) => task.id === taskId);
-    if (!taskToMove) return;
-
-    setTasks((prev) => ({
-      ...prev,
-      [from]: prev[from].filter((task) => task.id !== taskId),
-      [to]: [...prev[to], taskToMove],
-    }));
-  };
-
-  // Delete a task
-  const deleteTask = (taskId: number, category: TaskCategory) => {
-    setTasks((prev) => ({
-      ...prev,
-      [category]: prev[category].filter((task) => task.id !== taskId),
-    }));
-  };
-
   return (
     <Box sx={{ marginY: 2 }}>
-      <TaskAccordion
-        title="To-Do"
-        category="todo"
-        tasks={tasks.todo}
-        moveTask={moveTask}
-        deleteTask={deleteTask}
-      />
+      <TaskAccordion title="To-Do" category="todo" tasks={tasks.todo} />
       <TaskAccordion
         title="In-Progress"
         category="inProgress"
         tasks={tasks.inProgress}
-        moveTask={moveTask}
-        deleteTask={deleteTask}
       />
       <TaskAccordion
         title="Completed"
         category="completed"
         tasks={tasks.completed}
-        moveTask={moveTask}
-        deleteTask={deleteTask}
       />
     </Box>
   );

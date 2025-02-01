@@ -9,13 +9,7 @@ import { IconChevronDown } from "@tabler/icons-react";
 import { TaskAccordionProps } from "@/components/ui/types";
 import TaskItem from "@/components/ui/TaskItem";
 
-const TaskAccordion = ({
-  title,
-  category,
-  tasks,
-  moveTask,
-  deleteTask,
-}: TaskAccordionProps) => {
+const TaskAccordion = ({ title, category, tasks }: TaskAccordionProps) => {
   const theme = useTheme();
 
   return (
@@ -46,16 +40,12 @@ const TaskAccordion = ({
         {tasks.length > 0 ? (
           tasks.map((task) => (
             // Task Items inside Accordion
-            <TaskItem
-              key={task.id}
-              task={task}
-              category={category}
-              moveTask={moveTask}
-              deleteTask={deleteTask}
-            />
+            <TaskItem key={task.id} task={task} category={category} />
           ))
         ) : (
-          <Typography>No Tasks in {title}</Typography>
+          <Typography sx={{ fontSize: 14, textAlign: "center", py: 1 }}>
+            No Tasks in {title}
+          </Typography>
         )}
       </AccordionDetails>
     </Accordion>

@@ -2,28 +2,102 @@ import { useState } from "react";
 import {
   Box,
   IconButton,
-  Menu,
   MenuItem,
   Select,
   Typography,
   Checkbox,
 } from "@mui/material";
-import { IconDotsVertical, IconEdit, IconTrash } from "@tabler/icons-react";
-import { TaskCategory, TaskItemProps } from "@/components/ui/types";
-import UpdateTask from "@/components/ui/UpdateTask";
+import { IconDotsVertical } from "@tabler/icons-react";
+import { Task, TaskItemProps } from "@/components/ui/types";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/firebase";
+import { useSnackbar } from "notistack";
+import { format, isToday, isTomorrow, isYesterday } from "date-fns";
+import DropdownMenu from "./DropdownMenu";
 
-const TaskItem = ({ task, category, moveTask, deleteTask }: TaskItemProps) => {
+const TaskItem = ({ task }: TaskItemProps) => {
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchor(event.currentTarget);
   };
-
   const handleMenuClose = () => {
     setMenuAnchor(null);
   };
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const [categories, setCategories] = useState<string>(task.category);
+  const toggleComplete = async () => {
+    try {
+      if (!task.id) {
+        console.error("Error: Task ID is missing!");
+        enqueueSnackbar("Error: Task ID is missing!", { variant: "error" });
+        return;
+      }
+
+      const taskId = String(task.id);
+      const taskRef = doc(db, "todo", taskId);
+      // Determine the new completed status
+      const newCompletedStatus = !task.completed;
+      // Prepare update object
+      const updateData: Partial<Task> = { completed: newCompletedStatus };
+
+      // If task is being marked as incomplete, also update the category to "todo"
+      if (!newCompletedStatus) {
+        updateData.category = "todo";
+      }
+
+      // Proceed with update
+      await updateDoc(taskRef, updateData);
+      enqueueSnackbar("Task status updated successfully!", {
+        variant: "success",
+      });
+    } catch (error) {
+      console.error("Error updating task:", error);
+      enqueueSnackbar("Error updating task.", { variant: "error" });
+    }
+  };
+
+  const updateCategory = async (newCategory: string) => {
+    try {
+      // if (!task.id) {
+      //   console.error("Error: Task ID is missing!");
+      //   enqueueSnackbar("Error: Task ID is missing!", { variant: "error" });
+      //   return;
+      // }
+      const taskRef = doc(db, "todo", String(task.id));
+
+      // Determine whether to mark the task as incomplete
+      const shouldMarkIncomplete = newCategory !== "completed";
+      // Prepare the update object
+      const updateData: Partial<Task> = {
+        category: newCategory,
+        ...(shouldMarkIncomplete ? { completed: false } : { completed: true }), // Set completed based on category
+      };
+      // Proceed with update
+      await updateDoc(taskRef, updateData);
+      enqueueSnackbar("Task category updated successfully!", {
+        variant: "success",
+      });
+      // Update local state
+      setCategories(newCategory);
+    } catch (error) {
+      console.error("Error updating category:", error);
+      enqueueSnackbar("Error updating category. Please try again.", {
+        variant: "error",
+      });
+    }
+  };
+
+  const taskDateObj = new Date(task.date);
+  const isPastDate =
+    new Date(taskDateObj).setHours(0, 0, 0, 0) <
+    new Date().setHours(0, 0, 0, 0);
+  const getDateDisplay = () => {
+    if (isToday(taskDateObj)) return "Today";
+    if (isTomorrow(taskDateObj)) return "Tomorrow";
+    if (isYesterday(taskDateObj)) return "Yesterday";
+    return format(taskDateObj, "EEE, dd MMM yyyy");
+  };
+
   return (
     <Box
       display="flex"
@@ -33,9 +107,7 @@ const TaskItem = ({ task, category, moveTask, deleteTask }: TaskItemProps) => {
       mb={1}
     >
       <Box display="flex" flex={1} alignItems="center" gap={2}>
-        <Checkbox
-          checked={task.completed}
-        />
+        <Checkbox checked={task.completed} onClick={toggleComplete} />
         <Typography
           sx={{
             fontSize: 14,
@@ -45,71 +117,43 @@ const TaskItem = ({ task, category, moveTask, deleteTask }: TaskItemProps) => {
         >
           {task.title}
         </Typography>
-        <Typography sx={{ fontSize: 14, flex: 1 }}>{task.date}</Typography>
+        <Typography
+          sx={{
+            fontSize: 14,
+            flex: 1,
+            color: !task.completed && isPastDate ? "red" : "inherit",
+          }}
+        >
+          {getDateDisplay()}
+        </Typography>
         <Typography sx={{ fontSize: 14, flex: 1 }}>{task.type}</Typography>
       </Box>
 
       {/* Action Buttons */}
       <Box sx={{ display: "flex", alignItems: "center", flex: 0.3 }}>
         <Select
-          onChange={(e) =>
-            moveTask(task.id, category, e.target.value as TaskCategory)
-          }
           size="small"
-          value={category}
+          value={categories}
+          onChange={(e) => updateCategory(e.target.value)}
           sx={{ fontSize: 14, minWidth: 150, mx: 4, mr: 12 }}
         >
-          <MenuItem value="todo" sx={{ fontSize: 12 }}>
-            To-Do
-          </MenuItem>
-          <MenuItem value="inProgress" sx={{ fontSize: 12 }}>
-            In-Progress
-          </MenuItem>
-          <MenuItem value="completed" sx={{ fontSize: 12 }}>
-            Completed
-          </MenuItem>
+          {["todo", "inProgress", "completed"].map((cat) => (
+            <MenuItem key={cat} value={cat} sx={{ fontSize: 12 }}>
+              {cat.charAt(0).toUpperCase() +
+                cat.slice(1).replace(/([A-Z])/g, " $1")}
+            </MenuItem>
+          ))}
         </Select>
         {/* Three-dot menu */}
         <IconButton onClick={handleMenuOpen}>
           <IconDotsVertical />
         </IconButton>
+
         {/* Dropdown Menu */}
-        <Menu
-          anchorEl={menuAnchor}
-          open={Boolean(menuAnchor)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem
-            onClick={() => {
-              deleteTask(task.id, category);
-              handleMenuClose();
-            }}
-            sx={{
-              color: "red",
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              fontSize: 14,
-            }}
-          >
-            <IconTrash size={14} style={{ color: "red" }} />
-            Delete
-          </MenuItem>
-          <MenuItem
-            onClick={handleOpen}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              fontSize: 14,
-            }}
-          >
-            <IconEdit size={14} />
-            Edit
-          </MenuItem>
-        </Menu>
-        {/* Update Task Pop Up */}
-        <UpdateTask open={open} handleClose={handleClose} />
+        <DropdownMenu
+          menuAnchor={menuAnchor}
+          handleMenuClose={handleMenuClose}
+        />
       </Box>
     </Box>
   );
