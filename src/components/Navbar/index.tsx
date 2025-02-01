@@ -28,11 +28,13 @@ const Navbar = () => {
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        {/* App title */}
         <IconClipboardText size={30} color="black" />
         <Typography variant="h6" fontWeight={500} color="black">
           TaskBuddy
         </Typography>
       </Box>
+      {/* User account info */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
         <Avatar
           src={user.photoURL || "UserImage"}
@@ -42,6 +44,7 @@ const Navbar = () => {
         <Typography variant="caption" color="textSecondary" fontWeight={800}>
           {user.displayName}
         </Typography>
+        {/* Account Logout */}
         <Button
           startIcon={<IconLogout2 size={20} color="black" />}
           variant="outlined"

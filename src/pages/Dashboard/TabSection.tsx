@@ -31,6 +31,7 @@ const TabSection = () => {
         indicatorColor="primary"
         TabIndicatorProps={{ style: { backgroundColor: "black" } }}
       >
+        {/* list section */}
         <Tab
           icon={<IconList size={20} />}
           iconPosition="start"
@@ -43,6 +44,7 @@ const TabSection = () => {
             minHeight: "auto",
           }}
         />
+        {/* board section */}
         <Tab
           icon={<IconBrandTrello size={20} />}
           iconPosition="start"
@@ -56,7 +58,7 @@ const TabSection = () => {
           }}
         />
       </Tabs>
-
+      {/* tab panels */}
       {renderPanel()}
     </Box>
   );
