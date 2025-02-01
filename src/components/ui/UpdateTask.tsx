@@ -22,7 +22,7 @@ import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/firebase";
 import { Task } from "@/components/ui/types";
 import { enqueueSnackbar } from "notistack";
-import formatTimestamp from "@/components/ui/Dateformate";
+import formatTimestamp from "@/components/ui/DateFormate";
 
 interface UpdateTaskProps {
   open: boolean;

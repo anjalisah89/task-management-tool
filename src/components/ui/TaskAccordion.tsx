@@ -1,7 +1,9 @@
+import React from "react";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Divider,
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -23,8 +25,8 @@ const TaskAccordion = ({ title, category, tasks }: TaskProps) => {
           category === "todo"
             ? theme.palette.pink.main
             : category === "inProgress"
-            ? theme.palette.green.main
-            : theme.palette.blue.main,
+            ? theme.palette.blue.main
+            : theme.palette.green.main,
       }}
     >
       {/* Accordion Summary */}
@@ -39,8 +41,10 @@ const TaskAccordion = ({ title, category, tasks }: TaskProps) => {
       <AccordionDetails sx={{ backgroundColor: theme.palette.gray.main }}>
         {tasks.length > 0 ? (
           tasks.map((task) => (
-            // Task Items inside Accordion
-            <TaskItem key={task.id} task={task} category={category} />
+            <React.Fragment key={task.id}>
+              <TaskItem task={task} category={category} />
+              <Divider sx={{ my: 1, mx: 0 }} />
+            </React.Fragment>
           ))
         ) : (
           <Typography sx={{ fontSize: 14, textAlign: "center", py: 1 }}>

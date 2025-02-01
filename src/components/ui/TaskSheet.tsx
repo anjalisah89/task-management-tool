@@ -20,8 +20,8 @@ const TaskSheet = ({ title, category, tasks }: TaskProps) => {
             category === "todo"
               ? theme.palette.pink.main
               : category === "inProgress"
-              ? theme.palette.green.main
-              : theme.palette.blue.main,
+              ? theme.palette.blue.main
+              : theme.palette.green.main,
           color: theme.palette.pink.contrastText,
           fontSize: 14,
           fontWeight: "bold",
