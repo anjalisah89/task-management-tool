@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { IconChevronDown, IconSearch } from "@tabler/icons-react";
+import CreateTask from "@/components/ui/CreateTask";
 
-interface TaskBarProps {
-  handleOpen: () => void;
-}
+const TaskBar = () => {
+  const [open, setOpen] = useState(false);
 
-const TaskBar: React.FC<TaskBarProps> = ({ handleOpen }) => {
+  // Memoize handlers to prevent unnecessary re-renders
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   return (
     <Box
       sx={{
@@ -65,6 +68,8 @@ const TaskBar: React.FC<TaskBarProps> = ({ handleOpen }) => {
         >
           Add Task
         </Button>
+        {/* Dialog Box */}
+        <CreateTask open={open} handleClose={handleClose} />
       </Box>
     </Box>
   );

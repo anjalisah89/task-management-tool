@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Box } from "@mui/material";
-import TaskAccordion from "@/components/ui/TaskAccordion";
 import { Task, TaskCategory } from "@/components/ui/types";
 import { db } from "@/firebase";
 import { collection, query, onSnapshot } from "firebase/firestore";
+import TaskSheet from "@/components/ui/TaskSheet";
 
 // Define Initial Tasks
 const initialTasks: Record<TaskCategory, Task[]> = {
@@ -12,7 +12,7 @@ const initialTasks: Record<TaskCategory, Task[]> = {
   completed: [],
 };
 
-const AccordionList = () => {
+const TaskBox = () => {
   const [tasks, setTasks] =
     useState<Record<TaskCategory, Task[]>>(initialTasks);
 
@@ -54,19 +54,24 @@ const AccordionList = () => {
 
     return () => unsubscribe(); // Clean up the listener
   }, []);
-
   return (
-    <Box sx={{ marginY: 2 }}>
-      {/* Todo Accordion List */}
-      <TaskAccordion title="To-Do" category="todo" tasks={tasks.todo} />
-      {/* In-Progress Accordion List */}
-      <TaskAccordion
+    <Box
+      sx={{
+        display: "flex",
+        gap: 3,
+        mt: 3,
+      }}
+    >
+      {/* Todo Task Board */}
+      <TaskSheet title="To-Do" category="todo" tasks={tasks.todo} />
+      {/* In-Progress Task Board */}
+      <TaskSheet
         title="In-Progress"
         category="inProgress"
         tasks={tasks.inProgress}
       />
-      {/* Completed Accordion List */}
-      <TaskAccordion
+      {/* Completed Task Board */}
+      <TaskSheet
         title="Completed"
         category="completed"
         tasks={tasks.completed}
@@ -75,4 +80,4 @@ const AccordionList = () => {
   );
 };
 
-export default AccordionList;
+export default TaskBox;

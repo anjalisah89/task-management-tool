@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogActions,
@@ -15,23 +15,57 @@ import {
   Typography,
   Box,
   useTheme,
+  Divider,
 } from "@mui/material";
 import { IconX } from "@tabler/icons-react";
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/firebase";
+import { Task } from "@/components/ui/types";
+import { enqueueSnackbar } from "notistack";
+import formatTimestamp from "@/components/ui/DateFormate";
 
 interface UpdateTaskProps {
   open: boolean;
   handleClose: () => void;
+  task: Task;
 }
 
-const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose }) => {
+const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose, task }) => {
   const theme = useTheme();
-  const [status, setStatus] = useState("in-progress");
-  const [category, setCategory] = useState("work");
-  const [title, setTitle] = useState("Morning Workout");
-  const [description, setDescription] = useState(
-    "Spend 30 minutes on cardio and strength training exercises to stay active and healthy."
+  const [status, setStatus] = useState(task.type);
+  const [category, setCategory] = useState(task.category);
+  const [title, setTitle] = useState(task.title);
+  const [description, setDescription] = useState(task.description);
+  const [date, setDate] = useState(
+    task.date ? new Date(task.date).toISOString().split("T")[0] : ""
   );
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title || !status || !description || !date || !category) {
+      enqueueSnackbar("Please fill in all required fields", {
+        variant: "error",
+      });
+      return;
+    }
+
+    try {
+      const taskRef = doc(db, "todo", task.id);
+      await updateDoc(taskRef, {
+        title,
+        description,
+        category,
+        completed: category === "completed",
+        updatedAt: serverTimestamp(),
+        date: date ? new Date(date) : task.date,
+        type: status,
+      });
+      enqueueSnackbar("Task updated successfully!", { variant: "success" });
+      handleClose();
+    } catch {
+      enqueueSnackbar("Failed to update task", { variant: "error" });
+    }
+  };
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
       <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -40,7 +74,18 @@ const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose }) => {
           <IconX />
         </IconButton>
       </DialogTitle>
+      <Divider />
       <DialogContent>
+        {/* Task date info */}
+        <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 2 }}>
+          Created At: {formatTimestamp(task.createdAt)}
+        </Typography>
+        {task.updatedAt && (
+          <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 2 }}>
+            Last Updated: {formatTimestamp(task.updatedAt)}
+          </Typography>
+        )}
+        {/* update task form */}
         <TextField
           fullWidth
           label="Task Title"
@@ -60,21 +105,20 @@ const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose }) => {
         <Box display="flex" gap={4} mt={2}>
           <FormControl>
             <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
-              Task Category*
+              Task Status*
             </Typography>
             <ToggleButtonGroup
-              value={category}
+              value={status}
               exclusive
-              onChange={(_e, newCategory) =>
-                newCategory && setCategory(newCategory)
-              }
+              size="small"
+              onChange={(_e, newStatus) => newStatus && setStatus(newStatus)}
             >
-              <ToggleButton value="work" sx={{ fontSize: 10, fontWeight: 600 }}>
+              <ToggleButton value="Work" sx={{ fontSize: 14, fontWeight: 600 }}>
                 Work
               </ToggleButton>
               <ToggleButton
-                value="personal"
-                sx={{ fontSize: 10, fontWeight: 600 }}
+                value="Personal"
+                sx={{ fontSize: 14, fontWeight: 600 }}
               >
                 Personal
               </ToggleButton>
@@ -84,48 +128,41 @@ const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose }) => {
             <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
               Due On*
             </Typography>
-            <TextField fullWidth type="date" size="small" />
+            <TextField
+              fullWidth
+              type="date"
+              size="small"
+              required
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
           </FormControl>
           <FormControl sx={{ flex: 1 }}>
             <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
-              Task Status*
+              Task Category*
             </Typography>
             <Select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              sx={{ fontSize: 12 }}
               size="small"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              sx={{ fontSize: 14 }}
             >
-              <MenuItem value="todo" sx={{ fontSize: 12 }}>
-                To-Do
-              </MenuItem>
-              <MenuItem value="in-progress" sx={{ fontSize: 12 }}>
-                In Progress
-              </MenuItem>
-              <MenuItem value="completed" sx={{ fontSize: 12 }}>
-                Completed
-              </MenuItem>
+              {["todo", "inProgress", "completed"].map((cat) => (
+                <MenuItem key={cat} value={cat} sx={{ fontSize: 12 }}>
+                  {cat.charAt(0).toUpperCase() +
+                    cat.slice(1).replace(/([A-Z])/g, " $1")}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Box>
-        <Typography sx={{ fontSize: 14, fontWeight: 600, mt: 2 }}>
-          Attachment
-        </Typography>
-        <Button
-          component="label"
-          variant="outlined"
-          fullWidth
-          sx={{ mt: 1, borderRadius: 1 }}
-        >
-          Upload Attachment
-          <input type="file" hidden />
-        </Button>
       </DialogContent>
       <DialogActions sx={{ backgroundColor: theme.palette.gray.main, p: 2 }}>
         <Button onClick={handleClose} color="secondary" sx={{ px: 2 }}>
           Cancel
         </Button>
-        <Button onClick={handleClose} variant="contained">
+        {/* submit to update task */}
+        <Button onClick={handleSubmit} variant="contained">
           Update
         </Button>
       </DialogActions>
