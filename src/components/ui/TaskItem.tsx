@@ -13,61 +13,39 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 import { useSnackbar } from "notistack";
 import { format, isToday, isTomorrow, isYesterday } from "date-fns";
-import DropdownMenu from "./DropdownMenu";
+import DropdownMenu from "@/components/ui/DropdownMenu";
 
 const TaskItem = ({ task }: TaskItemProps) => {
-  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
-  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setMenuAnchor(event.currentTarget);
-  };
-  const handleMenuClose = () => {
-    setMenuAnchor(null);
-  };
-  const { enqueueSnackbar } = useSnackbar();
   const [categories, setCategories] = useState<string>(task.category);
+  const { enqueueSnackbar } = useSnackbar();
+  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+
   const toggleComplete = async () => {
     try {
-      if (!task.id) {
-        console.error("Error: Task ID is missing!");
-        enqueueSnackbar("Error: Task ID is missing!", { variant: "error" });
-        return;
-      }
-
       const taskId = String(task.id);
       const taskRef = doc(db, "todo", taskId);
       // Determine the new completed status
       const newCompletedStatus = !task.completed;
       // Prepare update object
-      const updateData: Partial<Task> = { completed: newCompletedStatus };
-
-      // If task is being marked as incomplete, also update the category to "todo"
-      if (!newCompletedStatus) {
-        updateData.category = "todo";
-      }
-
+      const updateData: Partial<Task> = {
+        completed: newCompletedStatus,
+        category: newCompletedStatus ? "completed" : "todo",
+      };
       // Proceed with update
       await updateDoc(taskRef, updateData);
       enqueueSnackbar("Task status updated successfully!", {
         variant: "success",
       });
-    } catch (error) {
-      console.error("Error updating task:", error);
+    } catch {
       enqueueSnackbar("Error updating task.", { variant: "error" });
     }
   };
 
   const updateCategory = async (newCategory: string) => {
     try {
-      // if (!task.id) {
-      //   console.error("Error: Task ID is missing!");
-      //   enqueueSnackbar("Error: Task ID is missing!", { variant: "error" });
-      //   return;
-      // }
       const taskRef = doc(db, "todo", String(task.id));
-
       // Determine whether to mark the task as incomplete
       const shouldMarkIncomplete = newCategory !== "completed";
-      // Prepare the update object
       const updateData: Partial<Task> = {
         category: newCategory,
         ...(shouldMarkIncomplete ? { completed: false } : { completed: true }), // Set completed based on category
@@ -79,14 +57,14 @@ const TaskItem = ({ task }: TaskItemProps) => {
       });
       // Update local state
       setCategories(newCategory);
-    } catch (error) {
-      console.error("Error updating category:", error);
+    } catch {
       enqueueSnackbar("Error updating category. Please try again.", {
         variant: "error",
       });
     }
   };
 
+  // Date formatting
   const taskDateObj = new Date(task.date);
   const isPastDate =
     new Date(taskDateObj).setHours(0, 0, 0, 0) <
@@ -96,6 +74,14 @@ const TaskItem = ({ task }: TaskItemProps) => {
     if (isTomorrow(taskDateObj)) return "Tomorrow";
     if (isYesterday(taskDateObj)) return "Yesterday";
     return format(taskDateObj, "EEE, dd MMM yyyy");
+  };
+  
+  // Delete and Update Task Menu
+  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setMenuAnchor(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setMenuAnchor(null);
   };
 
   return (
@@ -128,7 +114,6 @@ const TaskItem = ({ task }: TaskItemProps) => {
         </Typography>
         <Typography sx={{ fontSize: 14, flex: 1 }}>{task.type}</Typography>
       </Box>
-
       {/* Action Buttons */}
       <Box sx={{ display: "flex", alignItems: "center", flex: 0.3 }}>
         <Select
@@ -145,15 +130,17 @@ const TaskItem = ({ task }: TaskItemProps) => {
           ))}
         </Select>
         {/* Three-dot menu */}
-        <IconButton onClick={handleMenuOpen}>
-          <IconDotsVertical />
-        </IconButton>
-
-        {/* Dropdown Menu */}
-        <DropdownMenu
-          menuAnchor={menuAnchor}
-          handleMenuClose={handleMenuClose}
-        />
+        <Box>
+          <IconButton onClick={handleMenuOpen}>
+            <IconDotsVertical />
+          </IconButton>
+          {/* Dropdown Menu */}
+          <DropdownMenu
+            taskId={task.id}
+            menuAnchor={menuAnchor}
+            handleMenuClose={handleMenuClose}
+          />
+        </Box>
       </Box>
     </Box>
   );

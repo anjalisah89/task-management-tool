@@ -6,6 +6,8 @@ export type Task = {
   type: "Work" | "Personal";
   completed: boolean;
   category: string;
+  description: string;
+  createdAt: string;
 };
 
 // Define Task Category

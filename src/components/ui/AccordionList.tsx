@@ -20,12 +20,6 @@ const AccordionList = () => {
   useEffect(() => {
     const q = query(collection(db, "todo"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      // Security Check
-      if (snapshot.empty) {
-        // console.log("No data found!");
-        return;
-      }
-
       const updatedTasks: Record<TaskCategory, Task[]> = {
         todo: [],
         inProgress: [],
@@ -34,8 +28,6 @@ const AccordionList = () => {
 
       snapshot.forEach((doc) => {
         const data = doc.data();
-        // console.log("Fetched data:", data);
-
         const task: Task = {
           id: doc.id,
           title: data.title,
@@ -43,6 +35,8 @@ const AccordionList = () => {
           type: data.type,
           completed: data.completed,
           category: data.category,
+          description: data.description,
+          createdAt: data.createdAt,
         };
 
         if (data.completed) {
@@ -54,19 +48,23 @@ const AccordionList = () => {
         }
       });
 
-      setTasks(updatedTasks);
+      setTasks(updatedTasks); // Update the state with the new data
     });
-    return () => unsubscribe();
+
+    return () => unsubscribe(); // Clean up the listener
   }, []);
 
   return (
     <Box sx={{ marginY: 2 }}>
+      {/* Todo Accordion List */}
       <TaskAccordion title="To-Do" category="todo" tasks={tasks.todo} />
+      {/* In-Progress Accordion List */}
       <TaskAccordion
         title="In-Progress"
         category="inProgress"
         tasks={tasks.inProgress}
       />
+      {/* Completed Accordion List */}
       <TaskAccordion
         title="Completed"
         category="completed"

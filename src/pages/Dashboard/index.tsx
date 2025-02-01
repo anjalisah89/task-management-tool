@@ -20,6 +20,7 @@ const Dashboard = () => {
   }
 
   return (
+    // App dashboard
     <Box sx={{ overflowX: "hidden" }}>
       <Navbar />
       <TabSection />

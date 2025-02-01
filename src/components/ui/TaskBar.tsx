@@ -16,6 +16,7 @@ const TaskBar: React.FC<TaskBarProps> = ({ handleOpen }) => {
         mb: 4,
       }}
     >
+      {/* Filter options */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
         <Typography
           variant="caption"
@@ -42,6 +43,7 @@ const TaskBar: React.FC<TaskBarProps> = ({ handleOpen }) => {
           Due Date
         </Button>
       </Box>
+      {/* Search Options */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
         <TextField
           label="Search"
@@ -54,6 +56,7 @@ const TaskBar: React.FC<TaskBarProps> = ({ handleOpen }) => {
           }}
           slotProps={{ input: { startAdornment: <IconSearch /> } }}
         />
+        {/* Create Tasks Options */}
         <Button
           variant="contained"
           color="primary"

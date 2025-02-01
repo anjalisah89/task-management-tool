@@ -6,6 +6,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { auth, provider } from "@/firebase";
+import { enqueueSnackbar } from "notistack";
 
 // Define Auth Context
 interface AuthContextType {
@@ -33,16 +34,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const loginWithGoogle = async () => {
     try {
       await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Google Sign-In Error:", error);
+    } catch {
+      enqueueSnackbar("Unable to Sign-In, Please try again later.", {
+        variant: "error",
+      });
+      // console.error("Google Sign-In Error:", error);
     }
   };
 
   const logout = async () => {
     try {
       await signOut(auth);
-    } catch (error) {
-      console.error("Logout Error:", error);
+    } catch {
+      enqueueSnackbar("Oops! Unexpected Error.", { variant: "error" });
+      // console.error("Logout Error:", error);
     }
   };
 
