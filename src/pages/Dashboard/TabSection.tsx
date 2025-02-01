@@ -1,5 +1,4 @@
-import TaskBoard from "@/components/Board";
-import TaskList from "@/components/List";
+import TaskPanel from "@/components/TaskPanel";
 import { Box, Tab, Tabs } from "@mui/material";
 import { IconBrandTrello, IconList } from "@tabler/icons-react";
 import { useState } from "react";
@@ -11,17 +10,6 @@ const TabSection = () => {
     setValue(newValue);
   };
 
-  const renderPanel = () => {
-    switch (value) {
-      case 0:
-        return <TaskList />;
-      case 1:
-        return <TaskBoard />;
-      default:
-        return null;
-    }
-  };
-
   return (
     <Box sx={{ width: "100%", marginX: 1 }}>
       <Tabs
@@ -31,7 +19,7 @@ const TabSection = () => {
         indicatorColor="primary"
         TabIndicatorProps={{ style: { backgroundColor: "black" } }}
       >
-        {/* list section */}
+        {/* List Tab */}
         <Tab
           icon={<IconList size={20} />}
           iconPosition="start"
@@ -44,7 +32,7 @@ const TabSection = () => {
             minHeight: "auto",
           }}
         />
-        {/* board section */}
+        {/* Board Tab */}
         <Tab
           icon={<IconBrandTrello size={20} />}
           iconPosition="start"
@@ -58,8 +46,7 @@ const TabSection = () => {
           }}
         />
       </Tabs>
-      {/* tab panels */}
-      {renderPanel()}
+      <TaskPanel selectedTab={value} />
     </Box>
   );
 };
