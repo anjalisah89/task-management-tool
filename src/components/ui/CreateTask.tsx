@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogActions,
@@ -18,9 +18,9 @@ import {
   Divider,
 } from "@mui/material";
 import { IconX } from "@tabler/icons-react";
-import { useSnackbar } from "notistack";
+import { serverTimestamp, collection, addDoc } from "firebase/firestore";
 import { db } from "@/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { enqueueSnackbar } from "notistack";
 
 interface CreateTaskProps {
   open: boolean;
@@ -29,17 +29,17 @@ interface CreateTaskProps {
 
 const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
   const theme = useTheme();
-  const { enqueueSnackbar } = useSnackbar();
   const [status, setStatus] = useState("Work");
   const [category, setCategory] = useState("todo");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
+  const [completed, setCompleted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Field Checks
-    if (!title || !date || !status || !description) {
+
+    if (!title || !status || !description || !date || !category) {
       enqueueSnackbar("Please fill in all required fields", {
         variant: "error",
       });
@@ -47,14 +47,13 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
     }
 
     try {
-      // Create Tasks
       await addDoc(collection(db, "todo"), {
         id: Math.random().toString(36).slice(2, 11),
         title,
         description,
         category,
-        completed: category === "completed", // boolean value
-        createdAt: serverTimestamp(), // task created time by users 
+        completed, // boolean value
+        createdAt: serverTimestamp(), // task created time by users
         date: new Date(date), // task due date required in timestamp formate
         type: status,
       });
@@ -65,113 +64,106 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
       setDate("");
       setStatus("Work");
       setCategory("todo");
+      setCompleted(false);
       handleClose();
-    } catch {
+    } catch (error) {
+      console.error("Error creating task: ", error);
       enqueueSnackbar("Failed to create task", { variant: "error" });
     }
   };
-
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-      <form onSubmit={handleSubmit}>
-        <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
-          Create Task
-          <IconButton onClick={handleClose}>
-            <IconX />
-          </IconButton>
-        </DialogTitle>
-        <Divider sx={{ my: 1 }} />
-        {/* Task Form Data */}
-        <DialogContent>
+      <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
+        Create Task
+        <IconButton onClick={handleClose}>
+          <IconX />
+        </IconButton>
+      </DialogTitle>
+      <Divider sx={{ my: 1 }} />
+      {/* create task form */}
+      <DialogContent>
+        <FormControl fullWidth margin="dense">
           <TextField
-            fullWidth
             label="Task Title"
-            margin="dense"
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
+        </FormControl>
+        <FormControl fullWidth margin="dense">
           <TextField
-            fullWidth
             label="Description"
-            margin="dense"
             multiline
             rows={3}
             required
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          <Box display="flex" gap={4} mt={2}>
-            <FormControl>
-              <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
-                Task Status*
-              </Typography>
-              <ToggleButtonGroup
-                value={status}
-                exclusive
-                onChange={(_e, newStatus) => newStatus && setStatus(newStatus)}
+        </FormControl>
+        <Box display="flex" gap={2} mt={2}>
+          <FormControl>
+            <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
+              Task Status*
+            </Typography>
+            <ToggleButtonGroup
+              value={status}
+              exclusive
+              onChange={(_e, newStatus) => newStatus && setStatus(newStatus)}
+              size="small"
+            >
+              <ToggleButton value="Work" sx={{ fontSize: 14, fontWeight: 600 }}>
+                Work
+              </ToggleButton>
+              <ToggleButton
+                value="Personal"
+                sx={{ fontSize: 14, fontWeight: 600 }}
               >
-                <ToggleButton
-                  value="Work"
-                  sx={{ fontSize: 10, fontWeight: 600 }}
-                >
-                  Work
-                </ToggleButton>
-                <ToggleButton
-                  value="Personal"
-                  sx={{ fontSize: 10, fontWeight: 600 }}
-                >
-                  Personal
-                </ToggleButton>
-              </ToggleButtonGroup>
-            </FormControl>
-            <FormControl sx={{ flex: 1 }}>
-              <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
-                Due On*
-              </Typography>
-              <TextField
-                fullWidth
-                type="date"
-                size="small"
-                required
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </FormControl>
-            <FormControl sx={{ flex: 1 }}>
-              <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
-                Task Category*
-              </Typography>
-              <Select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                sx={{ fontSize: 12 }}
-                size="small"
-                required
-              >
-                <MenuItem value="todo" sx={{ fontSize: 12 }}>
-                  To-Do
+                Personal
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </FormControl>
+          <FormControl sx={{ flex: 1 }}>
+            <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
+              Due On*
+            </Typography>
+            <TextField
+              fullWidth
+              type="date"
+              size="small"
+              required
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+          </FormControl>
+          <FormControl sx={{ flex: 1 }}>
+            <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
+              Task Category*
+            </Typography>
+            <Select
+              size="small"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              sx={{ fontSize: 14 }}
+            >
+              {["todo", "inProgress", "completed"].map((cat) => (
+                <MenuItem key={cat} value={cat} sx={{ fontSize: 12 }}>
+                  {cat.charAt(0).toUpperCase() +
+                    cat.slice(1).replace(/([A-Z])/g, " $1")}
                 </MenuItem>
-                <MenuItem value="in-progress" sx={{ fontSize: 12 }}>
-                  In Progress
-                </MenuItem>
-                <MenuItem value="completed" sx={{ fontSize: 12 }}>
-                  Completed
-                </MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{ backgroundColor: theme.palette.gray.main, p: 2 }}>
-          <Button onClick={handleClose} color="secondary" sx={{ px: 2 }}>
-            Cancel
-          </Button>
-          {/* Submit to create a new task */}
-          <Button type="submit" variant="contained">
-            Create
-          </Button>
-        </DialogActions>
-      </form>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+      </DialogContent>
+      <DialogActions sx={{ backgroundColor: theme.palette.grey[100], p: 2 }}>
+        <Button onClick={handleClose} color="secondary">
+          Cancel
+        </Button>
+        {/* submit to create task */}
+        <Button onClick={handleSubmit} variant="contained">
+          Create
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };

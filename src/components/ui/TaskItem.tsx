@@ -75,7 +75,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
     if (isYesterday(taskDateObj)) return "Yesterday";
     return format(taskDateObj, "EEE, dd MMM yyyy");
   };
-  
+
   // Delete and Update Task Menu
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchor(event.currentTarget);
@@ -136,7 +136,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
           </IconButton>
           {/* Dropdown Menu */}
           <DropdownMenu
-            taskId={task.id}
+            task={task}
             menuAnchor={menuAnchor}
             handleMenuClose={handleMenuClose}
           />

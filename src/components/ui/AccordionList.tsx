@@ -37,6 +37,7 @@ const AccordionList = () => {
           category: data.category,
           description: data.description,
           createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
         };
 
         if (data.completed) {

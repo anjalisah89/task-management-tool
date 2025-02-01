@@ -1,4 +1,10 @@
 // Define Task Type
+
+export interface Timestamp {
+  seconds: number;
+  nanoseconds: number;
+}
+
 export type Task = {
   id: string;
   title: string;
@@ -7,7 +13,8 @@ export type Task = {
   completed: boolean;
   category: string;
   description: string;
-  createdAt: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 };
 
 // Define Task Category

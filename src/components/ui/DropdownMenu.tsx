@@ -5,17 +5,18 @@ import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 import UpdateTask from "@/components/ui/UpdateTask";
 import { enqueueSnackbar } from "notistack";
+import { Task } from "@/components/ui/types";
 
 interface DropdownMenuProps {
   menuAnchor: null | HTMLElement;
   handleMenuClose: () => void;
-  taskId: string;
+  task: Task;
 }
 
 const DropdownMenu = ({
   menuAnchor,
   handleMenuClose,
-  taskId,
+  task,
 }: DropdownMenuProps) => {
   const [open, setOpen] = useState(false);
 
@@ -23,6 +24,7 @@ const DropdownMenu = ({
   const handleClose = () => setOpen(false);
 
   // Deleting task
+  const taskId = task.id;
   const handleDelete = async () => {
     try {
       if (!taskId) {
@@ -31,7 +33,7 @@ const DropdownMenu = ({
       }
       await deleteDoc(doc(db, "todo", taskId)); // Delete the task from Firestore
       enqueueSnackbar("Task deleted successfully", { variant: "success" });
-      handleMenuClose(); 
+      handleMenuClose();
     } catch {
       enqueueSnackbar("Unable to delete task, please try again later.", {
         variant: "error",
@@ -66,7 +68,10 @@ const DropdownMenu = ({
         </MenuItem>
         {/* Update Menu */}
         <MenuItem
-          onClick={handleOpen}
+          onClick={() => {
+            handleOpen();
+            handleMenuClose();
+          }}
           sx={{
             display: "flex",
             alignItems: "center",
@@ -79,7 +84,7 @@ const DropdownMenu = ({
         </MenuItem>
       </Menu>
       {/* Update Task Pop Up */}
-      <UpdateTask open={open} handleClose={handleClose} />
+      <UpdateTask open={open} handleClose={handleClose} task={task} />
     </Box>
   );
 };
