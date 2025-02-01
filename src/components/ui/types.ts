@@ -20,14 +20,14 @@ export type Task = {
 // Define Task Category
 export type TaskCategory = "todo" | "inProgress" | "completed";
 
-// Define Task Accordion
-export interface TaskAccordionProps {
+// Define Task Props
+export interface TaskProps {
   title: string;
   category: TaskCategory;
   tasks: Task[];
 }
 
 // Define Task Item
-export type TaskItemProps = Omit<TaskAccordionProps, "title" | "tasks"> & {
+export type TaskItemProps = Omit<TaskProps, "title" | "tasks"> & {
   task: Task;
 };

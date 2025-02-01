@@ -1,12 +1,14 @@
 import { Box } from "@mui/material";
 import TaskBar from "@/components/ui/TaskBar";
-import TaskSheet from "@/components/ui/TaskSheet";
+import TaskBox from "@/components/ui/TaskBox";
 
 const TaskBoard = () => {
   return (
     <Box sx={{ margin: 2 }}>
+      {/* Task Create, filter and search bars */}
       <TaskBar />
-      <TaskSheet />
+      {/* Task boards */}
+      <TaskBox />
     </Box>
   );
 };

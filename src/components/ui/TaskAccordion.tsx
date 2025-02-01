@@ -6,10 +6,10 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { IconChevronDown } from "@tabler/icons-react";
-import { TaskAccordionProps } from "@/components/ui/types";
+import { TaskProps } from "@/components/ui/types";
 import TaskItem from "@/components/ui/TaskItem";
 
-const TaskAccordion = ({ title, category, tasks }: TaskAccordionProps) => {
+const TaskAccordion = ({ title, category, tasks }: TaskProps) => {
   const theme = useTheme();
 
   return (

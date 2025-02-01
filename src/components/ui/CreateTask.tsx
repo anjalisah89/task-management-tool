@@ -156,7 +156,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
         </Box>
       </DialogContent>
       <DialogActions sx={{ backgroundColor: theme.palette.grey[100], p: 2 }}>
-        <Button onClick={handleClose} color="secondary">
+        <Button onClick={handleClose} color="secondary" sx={{ px: 2 }}>
           Cancel
         </Button>
         {/* submit to create task */}
