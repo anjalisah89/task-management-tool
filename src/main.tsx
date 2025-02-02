@@ -1,4 +1,5 @@
 import router from "@/router";
+import Loader from "@/components/Loader";
 import theme from "@/theme";
 import "@fontsource/mulish/300.css";
 import "@fontsource/mulish/400.css";
@@ -16,7 +17,7 @@ createRoot(document.getElementById("root")!).render(
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
         <CssBaseline />
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loader />}>
           <RouterProvider router={router} />
         </Suspense>
       </SnackbarProvider>
