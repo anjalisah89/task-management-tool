@@ -6,6 +6,7 @@ import {
   Select,
   Typography,
   Checkbox,
+  useMediaQuery,
 } from "@mui/material";
 import { IconDotsVertical } from "@tabler/icons-react";
 import { Task, TaskItemProps } from "@/components/ui/types";
@@ -16,6 +17,7 @@ import { format, isToday, isTomorrow, isYesterday } from "date-fns";
 import DropdownMenu from "@/components/ui/DropdownMenu";
 
 const TaskItem = ({ task }: TaskItemProps) => {
+  const isMobile = useMediaQuery("(max-width: 600px)");
   const [categories, setCategories] = useState<string>(task.category);
   const { enqueueSnackbar } = useSnackbar();
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
@@ -103,32 +105,40 @@ const TaskItem = ({ task }: TaskItemProps) => {
         >
           {task.title}
         </Typography>
-        <Typography
-          sx={{
-            fontSize: 14,
-            flex: 1,
-            color: !task.completed && isPastDate ? "red" : "inherit",
-          }}
-        >
-          {getDateDisplay()}
-        </Typography>
-        <Typography sx={{ fontSize: 14, flex: 1 }}>{task.type}</Typography>
+        {!isMobile && (
+          <Typography
+            sx={{
+              fontSize: 14,
+              flex: 1,
+              color: !task.completed && isPastDate ? "red" : "inherit",
+            }}
+          >
+            {getDateDisplay()}
+          </Typography>
+        )}
+        {!isMobile && (
+          <Typography sx={{ fontSize: 14, flex: 1 }}>{task.type}</Typography>
+        )}
       </Box>
       {/* Action Buttons */}
-      <Box sx={{ display: "flex", alignItems: "center", flex: 0.3 }}>
-        <Select
-          size="small"
-          value={categories}
-          onChange={(e) => updateCategory(e.target.value)}
-          sx={{ fontSize: 14, minWidth: 150, mx: 4, mr: 12 }}
-        >
-          {["todo", "inProgress", "completed"].map((cat) => (
-            <MenuItem key={cat} value={cat} sx={{ fontSize: 12 }}>
-              {cat.charAt(0).toUpperCase() +
-                cat.slice(1).replace(/([A-Z])/g, " $1")}
-            </MenuItem>
-          ))}
-        </Select>
+      <Box
+        sx={{ display: "flex", alignItems: "center", flex: isMobile ? 0 : 0.3 }}
+      >
+        {!isMobile && (
+          <Select
+            size="small"
+            value={categories}
+            onChange={(e) => updateCategory(e.target.value)}
+            sx={{ fontSize: 14, minWidth: 150, mx: 4, mr: 12 }}
+          >
+            {["todo", "inProgress", "completed"].map((cat) => (
+              <MenuItem key={cat} value={cat} sx={{ fontSize: 12 }}>
+                {cat.charAt(0).toUpperCase() +
+                  cat.slice(1).replace(/([A-Z])/g, " $1")}
+              </MenuItem>
+            ))}
+          </Select>
+        )}
         {/* Three-dot menu */}
         <Box>
           <IconButton onClick={handleMenuOpen}>

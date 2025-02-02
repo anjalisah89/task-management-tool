@@ -1,4 +1,4 @@
-import { Box, Button, Typography, Avatar } from "@mui/material";
+import { Box, Button, Typography, Avatar, useMediaQuery } from "@mui/material";
 import { IconClipboardText, IconLogout2 } from "@tabler/icons-react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import { useEffect } from "react";
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useMediaQuery("(max-width: 600px)");
 
   useEffect(() => {
     if (!user) {
@@ -45,15 +46,17 @@ const Navbar = () => {
           {user.displayName}
         </Typography>
         {/* Account Logout */}
-        <Button
-          startIcon={<IconLogout2 size={20} color="black" />}
-          variant="outlined"
-          color="primary"
-          sx={{ borderRadius: 4, textTransform: "capitalize", fontSize: 12 }}
-          onClick={logout}
-        >
-          Logout
-        </Button>
+        {!isMobile && (
+          <Button
+            startIcon={<IconLogout2 size={20} color="black" />}
+            variant="outlined"
+            color="primary"
+            sx={{ borderRadius: 4, textTransform: "capitalize", fontSize: 12 }}
+            onClick={logout}
+          >
+            Logout
+          </Button>
+        )}
       </Box>
     </Box>
   );

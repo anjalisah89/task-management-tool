@@ -16,6 +16,7 @@ import {
   Box,
   useTheme,
   Divider,
+  useMediaQuery,
 } from "@mui/material";
 import { IconX } from "@tabler/icons-react";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
@@ -32,6 +33,7 @@ interface UpdateTaskProps {
 
 const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose, task }) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery("(max-width: 600px)");
   const [status, setStatus] = useState(task.type);
   const [category, setCategory] = useState(task.category);
   const [title, setTitle] = useState(task.title);
@@ -102,8 +104,8 @@ const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose, task }) => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-        <Box display="flex" gap={4} mt={2}>
-          <FormControl>
+        <Box display={isMobile ? "block" : "flex"} gap={2} mt={2}>
+          <FormControl sx={{ flex: 1, display: isMobile ? "block" : "flex" }}>
             <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
               Task Status*
             </Typography>
@@ -124,8 +126,15 @@ const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose, task }) => {
               </ToggleButton>
             </ToggleButtonGroup>
           </FormControl>
-          <FormControl sx={{ flex: 1 }}>
-            <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
+          <FormControl sx={{ flex: 1, display: isMobile ? "block" : "flex" }}>
+            <Typography
+              sx={{
+                fontSize: 14,
+                fontWeight: 600,
+                mb: 1,
+                mt: isMobile ? 2 : "none",
+              }}
+            >
               Due On*
             </Typography>
             <TextField
@@ -137,8 +146,15 @@ const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose, task }) => {
               onChange={(e) => setDate(e.target.value)}
             />
           </FormControl>
-          <FormControl sx={{ flex: 1 }}>
-            <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
+          <FormControl sx={{ flex: 1, display: isMobile ? "block" : "flex" }}>
+            <Typography
+              sx={{
+                fontSize: 14,
+                fontWeight: 600,
+                mb: 1,
+                mt: isMobile ? 2 : "none",
+              }}
+            >
               Task Category*
             </Typography>
             <Select

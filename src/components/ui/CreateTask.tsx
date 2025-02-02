@@ -16,6 +16,7 @@ import {
   Box,
   useTheme,
   Divider,
+  useMediaQuery,
 } from "@mui/material";
 import { IconX } from "@tabler/icons-react";
 import { serverTimestamp, collection, addDoc } from "firebase/firestore";
@@ -29,6 +30,7 @@ interface CreateTaskProps {
 
 const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery("(max-width: 600px)");
   const [status, setStatus] = useState("Work");
   const [category, setCategory] = useState("todo");
   const [title, setTitle] = useState("");
@@ -100,8 +102,8 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
             onChange={(e) => setDescription(e.target.value)}
           />
         </FormControl>
-        <Box display="flex" gap={2} mt={2}>
-          <FormControl>
+        <Box display={isMobile ? "block" : "flex"} gap={2} mt={2}>
+          <FormControl sx={{ flex: 1, display: isMobile ? "block" : "flex" }}>
             <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
               Task Status*
             </Typography>
@@ -122,8 +124,15 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
               </ToggleButton>
             </ToggleButtonGroup>
           </FormControl>
-          <FormControl sx={{ flex: 1 }}>
-            <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
+          <FormControl sx={{ flex: 1, display: isMobile ? "block" : "flex" }}>
+            <Typography
+              sx={{
+                fontSize: 14,
+                fontWeight: 600,
+                mb: 1,
+                mt: isMobile ? 2 : "none",
+              }}
+            >
               Due On*
             </Typography>
             <TextField
@@ -135,8 +144,15 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
               onChange={(e) => setDate(e.target.value)}
             />
           </FormControl>
-          <FormControl sx={{ flex: 1 }}>
-            <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
+          <FormControl sx={{ flex: 1, display: isMobile ? "block" : "flex" }}>
+            <Typography
+              sx={{
+                fontSize: 14,
+                fontWeight: 600,
+                mb: 1,
+                mt: isMobile ? 2 : "none",
+              }}
+            >
               Task Category*
             </Typography>
             <Select
@@ -154,6 +170,18 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
             </Select>
           </FormControl>
         </Box>
+        <Typography sx={{ fontSize: 14, fontWeight: 600, mt: 2 }}>
+          Attachment
+        </Typography>
+        <Button
+          component="label"
+          variant="outlined"
+          fullWidth
+          sx={{ mt: 1, borderRadius: 1, textTransform: "capitalize" }}
+        >
+          Upload Attachment
+          <input type="file" hidden />
+        </Button>
       </DialogContent>
       <DialogActions sx={{ backgroundColor: theme.palette.grey[100], p: 2 }}>
         <Button onClick={handleClose} color="secondary" sx={{ px: 2 }}>
