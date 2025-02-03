@@ -19,8 +19,8 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { IconX } from "@tabler/icons-react";
-import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/firebase";
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { Task } from "@/components/ui/types";
 import { enqueueSnackbar } from "notistack";
 import formatTimestamp from "@/components/ui/DateFormate";
@@ -42,6 +42,14 @@ const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose, task }) => {
     task.date ? new Date(task.date).toISOString().split("T")[0] : ""
   );
 
+  const [attachment, setAttachment] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setAttachment(e.target.files[0]);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !status || !description || !date || !category) {
@@ -61,6 +69,9 @@ const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose, task }) => {
         updatedAt: serverTimestamp(),
         date: date ? new Date(date) : task.date,
         type: status,
+        ...(attachment && {
+          uploadedAt: serverTimestamp(),
+        }),
       });
       enqueueSnackbar("Task updated successfully!", { variant: "success" });
       handleClose();
@@ -80,11 +91,16 @@ const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose, task }) => {
       <DialogContent>
         {/* Task date info */}
         <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 2 }}>
-          Created At: {formatTimestamp(task.createdAt)}
+          Task Created At: {formatTimestamp(task.createdAt)}
         </Typography>
         {task.updatedAt && (
           <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 2 }}>
-            Last Updated: {formatTimestamp(task.updatedAt)}
+            Task Last Updated: {formatTimestamp(task.updatedAt)}
+          </Typography>
+        )}
+        {task.uploadedAt && (
+          <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 2 }}>
+            File Uploaded At: {formatTimestamp(task.uploadedAt)}
           </Typography>
         )}
         {/* update task form */}
@@ -106,7 +122,14 @@ const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose, task }) => {
         />
         <Box display={isMobile ? "block" : "flex"} gap={2} mt={2}>
           <FormControl sx={{ flex: 1, display: isMobile ? "block" : "flex" }}>
-            <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
+            <Typography
+              sx={{
+                fontSize: 14,
+                fontWeight: 600,
+                mb: 1,
+                mt: isMobile ? 2 : "none",
+              }}
+            >
               Task Status*
             </Typography>
             <ToggleButtonGroup
@@ -172,6 +195,23 @@ const UpdateTask: React.FC<UpdateTaskProps> = ({ open, handleClose, task }) => {
             </Select>
           </FormControl>
         </Box>
+        <Typography sx={{ fontSize: 14, fontWeight: 600, mt: 2 }}>
+          Attachment
+        </Typography>
+        {attachment && (
+          <Typography sx={{ fontSize: 14, mt: 1 }}>
+            {attachment.name}
+          </Typography>
+        )}
+        <Button
+          component="label"
+          variant="outlined"
+          fullWidth
+          sx={{ mt: 1, borderRadius: 1, textTransform: "capitalize" }}
+        >
+          Upload Attachment
+          <input type="file" hidden onChange={handleFileChange} />
+        </Button>
       </DialogContent>
       <DialogActions sx={{ backgroundColor: theme.palette.gray.main, p: 2 }}>
         <Button onClick={handleClose} color="secondary" sx={{ px: 2 }}>

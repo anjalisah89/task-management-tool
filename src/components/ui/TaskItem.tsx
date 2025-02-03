@@ -8,15 +8,29 @@ import {
   Checkbox,
   useMediaQuery,
 } from "@mui/material";
-import { IconDotsVertical } from "@tabler/icons-react";
-import { Task, TaskItemProps } from "@/components/ui/types";
+import {
+  IconCircleCheckFilled,
+  IconDotsVertical,
+  IconGripVertical,
+} from "@tabler/icons-react";
+import { Task } from "@/components/ui/types";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 import { useSnackbar } from "notistack";
 import { format, isToday, isTomorrow, isYesterday } from "date-fns";
 import DropdownMenu from "@/components/ui/DropdownMenu";
 
-const TaskItem = ({ task }: TaskItemProps) => {
+interface TaskProps {
+  task: Task;
+  onSelectTask: (taskId: string) => void;
+  selectedTasks: string[];
+}
+
+const TaskItem: React.FC<TaskProps> = ({
+  task,
+  onSelectTask,
+  selectedTasks,
+}) => {
   const isMobile = useMediaQuery("(max-width: 600px)");
   const [categories, setCategories] = useState<string>(task.category);
   const { enqueueSnackbar } = useSnackbar();
@@ -95,7 +109,22 @@ const TaskItem = ({ task }: TaskItemProps) => {
       mb={1}
     >
       <Box display="flex" flex={1} alignItems="center" gap={2}>
-        <Checkbox checked={task.completed} onClick={toggleComplete} />
+        {/* update multiple task using checkbox */}
+        <Checkbox
+          checked={selectedTasks.includes(task.id)}
+          onChange={() => onSelectTask(task.id)}
+        />
+        {!isMobile && <IconGripVertical />}
+        {/* update single task */}
+        {task.completed ? (
+          <IconButton onClick={toggleComplete}>
+            <IconCircleCheckFilled color="green" />
+          </IconButton>
+        ) : (
+          <IconButton onClick={toggleComplete}>
+            <IconCircleCheckFilled />
+          </IconButton>
+        )}
         <Typography
           sx={{
             fontSize: 14,
@@ -120,6 +149,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
           <Typography sx={{ fontSize: 14, flex: 1 }}>{task.type}</Typography>
         )}
       </Box>
+      
       {/* Action Buttons */}
       <Box
         sx={{ display: "flex", alignItems: "center", flex: isMobile ? 0 : 0.3 }}

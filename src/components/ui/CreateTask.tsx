@@ -18,10 +18,10 @@ import {
   Divider,
   useMediaQuery,
 } from "@mui/material";
-import { IconX } from "@tabler/icons-react";
-import { serverTimestamp, collection, addDoc } from "firebase/firestore";
 import { db } from "@/firebase";
+import { serverTimestamp, collection, addDoc } from "firebase/firestore";
 import { enqueueSnackbar } from "notistack";
+import { IconX } from "@tabler/icons-react";
 
 interface CreateTaskProps {
   open: boolean;
@@ -37,6 +37,13 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [completed, setCompleted] = useState(false);
+  const [attachment, setAttachment] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setAttachment(e.target.files[0]);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +65,9 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
         createdAt: serverTimestamp(), // task created time by users
         date: new Date(date), // task due date required in timestamp formate
         type: status,
+        ...(attachment && {
+          uploadedAt: serverTimestamp(),
+        }),
       });
       enqueueSnackbar("Task created successfully!", { variant: "success" });
       // Reset Form Data
@@ -67,12 +77,14 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
       setStatus("Work");
       setCategory("todo");
       setCompleted(false);
+      setAttachment(null);
       handleClose();
     } catch (error) {
       console.error("Error creating task: ", error);
       enqueueSnackbar("Failed to create task", { variant: "error" });
     }
   };
+
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
       <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -104,7 +116,14 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
         </FormControl>
         <Box display={isMobile ? "block" : "flex"} gap={2} mt={2}>
           <FormControl sx={{ flex: 1, display: isMobile ? "block" : "flex" }}>
-            <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
+            <Typography
+              sx={{
+                fontSize: 14,
+                fontWeight: 600,
+                mb: 1,
+                mt: isMobile ? 2 : "none",
+              }}
+            >
               Task Status*
             </Typography>
             <ToggleButtonGroup
@@ -173,6 +192,11 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
         <Typography sx={{ fontSize: 14, fontWeight: 600, mt: 2 }}>
           Attachment
         </Typography>
+        {attachment && (
+          <Typography sx={{ fontSize: 14, mt: 1 }}>
+            {attachment.name}
+          </Typography>
+        )}
         <Button
           component="label"
           variant="outlined"
@@ -180,7 +204,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ open, handleClose }) => {
           sx={{ mt: 1, borderRadius: 1, textTransform: "capitalize" }}
         >
           Upload Attachment
-          <input type="file" hidden />
+          <input type="file" hidden onChange={handleFileChange} />
         </Button>
       </DialogContent>
       <DialogActions sx={{ backgroundColor: theme.palette.grey[100], p: 2 }}>
