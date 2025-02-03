@@ -1,12 +1,21 @@
-import { Box, Button, Typography, Avatar } from "@mui/material";
-import { IconClipboardText, IconLogout2 } from "@tabler/icons-react";
+import { useEffect } from "react";
+import {
+  Box,
+  Button,
+  Typography,
+  Avatar,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { IconClipboardText, IconLogout2 } from "@tabler/icons-react";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery("(max-width: 600px)");
 
   useEffect(() => {
     if (!user) {
@@ -24,10 +33,20 @@ const Navbar = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "10px 20px",
+        paddingX: "4%",
+        paddingY: "2%",
+        backgroundColor: isMobile
+          ? theme.palette.lightpink.main
+          : theme.palette.white.main,
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+        }}
+      >
         {/* App title */}
         <IconClipboardText size={30} color="black" />
         <Typography variant="h6" fontWeight={500} color="black">
@@ -45,15 +64,17 @@ const Navbar = () => {
           {user.displayName}
         </Typography>
         {/* Account Logout */}
-        <Button
-          startIcon={<IconLogout2 size={20} color="black" />}
-          variant="outlined"
-          color="primary"
-          sx={{ borderRadius: 4, textTransform: "capitalize", fontSize: 12 }}
-          onClick={logout}
-        >
-          Logout
-        </Button>
+        {!isMobile && (
+          <Button
+            startIcon={<IconLogout2 size={20} color="black" />}
+            variant="outlined"
+            color="primary"
+            sx={{ borderRadius: 4, textTransform: "capitalize", fontSize: 12 }}
+            onClick={logout}
+          >
+            Logout
+          </Button>
+        )}
       </Box>
     </Box>
   );

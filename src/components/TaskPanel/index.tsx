@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Divider } from "@mui/material";
+import { Box, Divider, useMediaQuery } from "@mui/material";
 import { db } from "@/firebase";
 import { collection, query, onSnapshot } from "firebase/firestore";
 import { Task, TaskCategory } from "@/components/ui/types";
@@ -16,6 +16,7 @@ const initialTasks: Record<TaskCategory, Task[]> = {
 };
 
 const TaskPanel = ({ selectedTab }: { selectedTab: number }) => {
+  const isMobile = useMediaQuery("(max-width: 600px)");
   const [tasks, setTasks] =
     useState<Record<TaskCategory, Task[]>>(initialTasks);
   const [searchInput, setSearchInput] = useState("");
@@ -45,6 +46,7 @@ const TaskPanel = ({ selectedTab }: { selectedTab: number }) => {
           description: data.description,
           createdAt: data.createdAt,
           updatedAt: data.updatedAt,
+          uploadedAt: data.uploadedAt,
         };
 
         if (data.completed) {
@@ -117,62 +119,70 @@ const TaskPanel = ({ selectedTab }: { selectedTab: number }) => {
   };
 
   return (
-    <Box sx={{ margin: 2 }}>
-      {/* Task Create, filter and search bars */}
-      <TaskBar
-        searchInput={searchInput}
-        setSearchInput={setSearchInput}
-        handleSearch={() => setSearchQuery(searchInput)}
-        selectedStatus={selectedStatus}
-        setSelectedStatus={setSelectedStatus}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-      />
-      {selectedTab === 0 ? (
-        // Render the List view content
-        <>
-          <Divider sx={{ my: 2 }} />
-          {/* Task Lables */}
-          <TaskLabel />
-          {/* Todo Accordion List */}
-          <TaskAccordion
-            title="To-Do"
-            category="todo"
-            tasks={filteredTasks.todo}
-          />
-          {/* Todo Accordion List */}
-          <TaskAccordion
-            title="In-Progress"
-            category="inProgress"
-            tasks={filteredTasks.inProgress}
-          />{" "}
-          {/* Completed Accordion List */}
-          <TaskAccordion
-            title="Completed"
-            category="completed"
-            tasks={filteredTasks.completed}
-          />
-        </>
-      ) : (
-        // Render the Board view content
-        <Box sx={{ display: "flex", gap: 3, mt: 3 }}>
-          {/* Todo Task Board */}
-          <TaskSheet title="To-Do" category="todo" tasks={filteredTasks.todo} />
-          {/* In-Progress Task Board */}
-          <TaskSheet
-            title="In-Progress"
-            category="inProgress"
-            tasks={filteredTasks.inProgress}
-          />
-          {/* Completed Task Board */}
-          <TaskSheet
-            title="Completed"
-            category="completed"
-            tasks={filteredTasks.completed}
-          />
-        </Box>
-      )}
-    </Box>
+    <>
+      {isMobile && <Divider sx={{ mb: 2 }} />}
+      <Box sx={{ margin: 2, pr: isMobile ? 0 : 2 }}>
+        {/* Task Create, filter and search bars */}
+        <TaskBar
+          searchInput={searchInput}
+          setSearchInput={setSearchInput}
+          handleSearch={() => setSearchQuery(searchInput)}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+        />
+        
+        {selectedTab === 0 ? (
+          // Render the List view content
+          <>
+            {!isMobile && <Divider sx={{ my: 2 }} />}
+            {/* Task Lables */}
+            {!isMobile && <TaskLabel />}
+            {/* Todo Accordion List */}
+            <TaskAccordion
+              title="To-Do"
+              category="todo"
+              tasks={filteredTasks.todo}
+            />
+            {/* Todo Accordion List */}
+            <TaskAccordion
+              title="In-Progress"
+              category="inProgress"
+              tasks={filteredTasks.inProgress}
+            />
+            {/* Completed Accordion List */}
+            <TaskAccordion
+              title="Completed"
+              category="completed"
+              tasks={filteredTasks.completed}
+            />
+          </>
+        ) : (
+          // Render the Board view content
+          <Box sx={{ display: "flex", gap: 3, mt: 3 }}>
+            {/* Todo Task Board */}
+            <TaskSheet
+              title="To-Do"
+              category="todo"
+              tasks={filteredTasks.todo}
+            />
+            {/* In-Progress Task Board */}
+            <TaskSheet
+              title="In-Progress"
+              category="inProgress"
+              tasks={filteredTasks.inProgress}
+            />
+            {/* Completed Task Board */}
+            <TaskSheet
+              title="Completed"
+              category="completed"
+              tasks={filteredTasks.completed}
+            />
+          </Box>
+        )}
+      </Box>
+    </>
   );
 };
 

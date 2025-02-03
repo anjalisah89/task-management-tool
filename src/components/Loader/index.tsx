@@ -1,4 +1,4 @@
-import { Box, keyframes, useTheme } from "@mui/material";
+import { Box, keyframes, useMediaQuery, useTheme } from "@mui/material";
 
 // Define the animation
 const loadingAnimation = keyframes`
@@ -15,7 +15,7 @@ const loadingAnimation = keyframes`
 
 const Loading = () => {
   const theme = useTheme();
-
+  const isMobile = useMediaQuery("(max-width: 600px)");
   return (
     <Box
       sx={{
@@ -28,7 +28,7 @@ const Loading = () => {
     >
       <Box
         sx={{
-          width: "8%",
+          width: isMobile ? "24%" : "8%",
           height: "4%",
         }}
       >

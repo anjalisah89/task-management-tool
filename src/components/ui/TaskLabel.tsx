@@ -12,7 +12,7 @@ const TaskLabel = () => {
       <Typography
         variant="caption"
         color="textSecondary"
-        sx={{ fontSize: 12, fontWeight: 800, flex: 1.4 }}
+        sx={{ fontSize: 12, fontWeight: 800, flex: 1.8 }}
       >
         Task Name
       </Typography>

@@ -10,6 +10,7 @@ declare module "@mui/material/styles" {
     blue: Palette["primary"];
     white: Palette["primary"];
     black: Palette["primary"];
+    lightpink: Palette["primary"];
     pink: Palette["primary"];
     green: Palette["primary"];
     gray: Palette["primary"];
@@ -29,6 +30,7 @@ declare module "@mui/material/styles" {
     blue?: PaletteOptions["primary"];
     white?: PaletteOptions["primary"];
     black?: PaletteOptions["primary"];
+    lightpink?: PaletteOptions["primary"];
     pink?: PaletteOptions["primary"];
     green?: PaletteOptions["primary"];
     gray?: PaletteOptions["primary"];
@@ -77,6 +79,7 @@ declare module "@mui/material/Button" {
     blue: true;
     white: true;
     black: true;
+    lightpink: true;
     pink: true;
     green: true;
     gray: true;
@@ -89,6 +92,7 @@ declare module "@mui/material/Link" {
     blue: true;
     white: true;
     black: true;
+    lightpink: true;
     pink: true;
     green: true;
     gray: true;
@@ -101,6 +105,7 @@ declare module "@mui/material/Typography" {
     blue: true;
     white: true;
     black: true;
+    lightpink: true;
     pink: true;
     green: true;
     gray: true;
@@ -114,6 +119,7 @@ declare module "@mui/material/Chip" {
     blue: true;
     white: true;
     black: true;
+    lightpink: true;
     pink: true;
     green: true;
     gray: true;
@@ -126,6 +132,7 @@ declare module "@mui/material/AppBar" {
     blue: true;
     white: true;
     black: true;
+    lightpink: true;
     pink: true;
     green: true;
     gray: true;

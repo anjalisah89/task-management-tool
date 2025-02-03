@@ -15,25 +15,31 @@ This is a task management application that allows users to create, update, delet
 
 ### Task Management
 - Users can create, edit, and delete tasks.
-- Task categorization (e.g., work, personal) and tagging for better organization.
-- Allow users to set due dates for tasks.
-- Users can sort tasks based on due dates.
+- Tasks can be categorized (e.g., work, personal) and tagged for better organization.
+- Users can set due dates for tasks.
+- Tasks can be sorted based on due dates.
 
 ### Batch Actions
-- Perform batch actions on tasks (e.g., delete multiple tasks, mark multiple tasks as complete).
+- Users can perform batch actions on tasks, such as deleting multiple tasks or marking multiple tasks as complete.
 
 ### Task History and Activity Log
-- Track changes made to tasks (e.g., creation, edits, deletions) and display an activity log for each task.
+- Tracks changes made to tasks, including creation, edits, and deletions.
+- Displays an activity log for each task.
+
+### File Attachments
+- Users can attach files or documents to tasks for additional context.
+- File upload functionality is available in the task creation/editing form.
+- Attached files are displayed in the task detail view.
 
 ### Filter Options
-- Filter tasks by tags, category, and date range.
-- Enable search functionality by task title.
+- Users can filter tasks by tags, category, and date range.
+- Search functionality allows users to find tasks by title.
 
 ### Board/List View
 - Users can switch between a board view (Kanban-style) and a list view for their tasks.
 
 ### Responsive Design
-- Fully responsive application, adapting to various screen sizes (mobile, tablet, desktop) with a mobile-first design approach.
+- Fully responsive design adapting to various screen sizes (mobile, tablet, desktop) with a mobile-first approach.
 
 ## Running the App
 
@@ -47,10 +53,10 @@ git clone https://github.com/anjalisah89/task-management-app.git
 cd task-management-app
 
 # Install dependencies
-yarn install  # or npm install
+ npm install # or yarn install 
 
 # Start the development server
-yarn dev  # or npm run dev
+npm run dev  # or yarn dev
 ```
 
 ---

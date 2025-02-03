@@ -8,6 +8,7 @@ import {
   MenuItem,
   TextField,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { IconChevronDown, IconSearch } from "@tabler/icons-react";
 import CreateTask from "@/components/ui/CreateTask";
@@ -31,6 +32,7 @@ const TaskBar: React.FC<TaskBarProps> = ({
   selectedDate,
   setSelectedDate,
 }) => {
+  const isMobile = useMediaQuery("(max-width: 600px)");
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -55,7 +57,7 @@ const TaskBar: React.FC<TaskBarProps> = ({
   return (
     <Box
       sx={{
-        display: "flex",
+        display: isMobile ? "block" : "flex",
         gap: 1,
         alignItems: "center",
         justifyContent: "space-between",
@@ -63,12 +65,20 @@ const TaskBar: React.FC<TaskBarProps> = ({
       }}
     >
       {/* Filter options */}
-      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 1,
+          alignItems: "center",
+          mt: isMobile ? 10 : "none",
+          mb: isMobile ? 2 : "none",
+        }}
+      >
         <Typography
           variant="caption"
-          fontWeight={400}
+          fontWeight={600}
           color="black"
-          sx={{ fontSize: 12 }}
+          sx={{ fontSize: 14, gap: 1 }}
         >
           Filter By :
         </Typography>
@@ -196,7 +206,13 @@ const TaskBar: React.FC<TaskBarProps> = ({
         </Menu>
       </Box>
       {/* Search Options */}
-      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+      <Box
+        sx={{
+          display: isMobile ? "block" : "flex",
+          gap: 1,
+          alignItems: "center",
+        }}
+      >
         <TextField
           label="Search"
           color="primary"
@@ -224,7 +240,13 @@ const TaskBar: React.FC<TaskBarProps> = ({
         <Button
           variant="contained"
           color="primary"
-          sx={{ px: 4, py: 1 }}
+          sx={{
+            px: 4,
+            py: 1,
+            position: isMobile ? "absolute" : "static",
+            top: isMobile ? "8%" : "auto",
+            right: isMobile ? "4%" : "auto",
+          }}
           onClick={handleOpen}
         >
           Add Task

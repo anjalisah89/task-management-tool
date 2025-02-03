@@ -69,6 +69,13 @@ let theme = createTheme({
 theme = createTheme(theme, {
   // Custom colors with augmented theme
   palette: {
+    lightpink: theme.palette.augmentColor({
+      color: {
+        main: "#FAEEFC",
+        contrastText: "#000000",
+      },
+      name: "lightpink",
+    }),
     pink: theme.palette.augmentColor({
       color: {
         main: "#FAC3FF",

@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Box, Menu, MenuItem } from "@mui/material";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
-import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "@/firebase";
-import UpdateTask from "@/components/ui/UpdateTask";
+import { doc, deleteDoc } from "firebase/firestore";
 import { enqueueSnackbar } from "notistack";
 import { Task } from "@/components/ui/types";
+import UpdateTask from "@/components/ui/UpdateTask";
 
 interface DropdownMenuProps {
   menuAnchor: null | HTMLElement;
